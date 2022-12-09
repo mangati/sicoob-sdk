@@ -1,0 +1,52 @@
+{
+  "mensagens": [],
+  "resultado": {
+    "saldoAtual": "4302.49",
+    "saldoBloqueado": "0.00",
+    "saldoLimite": "5000.00",
+    "saldoAnterior": "2244.12",
+    "transacoes": [
+      {
+        "tipo": "DEBITO",
+        "valor": "250.00",
+        "data": "2023-12-01T00:00:00",
+        "dataLote": "2023-12-01",
+        "descricao": "PIX EMITIDO OUTRA IF",
+        "numeroDocumento": "Pix",
+        "descInfComplementar": "Pagamento Pix"
+      },
+      {
+        "tipo": "DEBITO",
+        "valor": "1260.06",
+        "data": "2023-11-19T00:00:00",
+        "dataLote": "2023-12-05",
+        "descricao": "DÉB.CONV.DEMAIS EMPRESAS",
+        "numeroDocumento": "MASTERCARD"
+      },
+      {
+        "tipo": "DEBITO",
+        "valor": "50.00",
+        "data": "2023-12-07T00:00:00",
+        "dataLote": "2023-12-07",
+        "descricao": "DÉB.CONV.TRIBUTOS FEDERAIS - RFB",
+        "numeroDocumento": "12345678"
+      },
+      {
+        "tipo": "CREDITO",
+        "valor": "300.00",
+        "data": "2023-12-08T00:00:00",
+        "dataLote": "2023-12-08",
+        "descricao": "CRED.TRANSF.CONTAS INTERCREDIS",
+        "numeroDocumento": "3008"
+      },
+      {
+        "tipo": "DEBITO",
+        "valor": "3.00",
+        "data": "2023-12-12T00:00:00",
+        "dataLote": "2023-12-11",
+        "descricao": "TARIFA COBRANÇA",
+        "numeroDocumento": "2237233"
+      }
+    ]
+  }
+}

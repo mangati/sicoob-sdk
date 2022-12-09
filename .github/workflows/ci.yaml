@@ -1,0 +1,22 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: php-actions/composer@v6.1.1
+        with:
+          php_version: "8.1"
+
+      - name: PHP Code Standards
+        run: vendor/bin/phpcs
+
+      - name: PHP Code Analysis 
+        run: vendor/bin/phpstan
+
+      - name: PHP Unit Tests
+        run: vendor/bin/phpunit

@@ -1,0 +1,35 @@
+{
+  "calendario": {
+    "dataDeVencimento": "2023-01-03",
+    "validadeAposVencimento": 7
+  },
+  "devedor": {
+    "nome": "Nome Devedor",
+    "cpf": "12345678900",
+    "cnpj": null,
+    "logradouro": null,
+    "cidade": null,
+    "uf": null,
+    "cep": null
+  },
+  "valor": {
+    "original": "23.44",
+    "modalidadeAlteracao": null,
+    "multa": {
+      "modalidade": 1,
+      "valorPerc": "5.00"
+    },
+    "juros": {
+      "modalidade": 2,
+      "valorPerc": "15.00"
+    }
+  },
+  "chave": "chave",
+  "solicitacaoPagador": "solicitacao",
+  "infoAdicionais": [
+    {
+      "nome": "nome",
+      "valor": "10.23"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+
+{
+  "resultado": [
+    {
+      "status": {
+        "codigo": 123,
+        "mensagem": "sucesso"
+      },
+      "boleto": {
+        "numeroContrato": 999999,
+        "modalidade": 1,
+        "numeroContaCorrente": 123456,
+        "especieDocumento": "FAT",
+        "dataEmissao": "2022-08-15T00:00:00+00:00",
+        "seuNumero": "158",
+        "identificacaoEmissaoBoleto": 2,
+        "identificacaoDistribuicaoBoleto": 2,
+        "valor": 150.0,
+        "dataVencimento": "2022-08-22T00:00:00+00:00",
+        "dataMulta": "2022-08-23T00:00:00+00:00",
+        "dataJurosMora": "2022-08-23T00:00:00+00:00",
+        "tipoDesconto": 0,
+        "tipoMulta": 2,
+        "valorMulta": 5.0,
+        "tipoJurosMora": 2,
+        "valorJurosMora": 2.0,
+        "numeroParcela": 1,
+        "pagador": {
+          "numeroCpfCnpj": "12345678901234",
+          "nome": "Nome do Pagador",
+          "endereco": "Av. Teste, 1000",
+          "bairro": "Bairro Teste",
+          "cidade": "Cidade Teste",
+          "cep": "12345678",
+          "uf": "TT",
+          "email": [
+            "email@test.com"
+          ]
+        },
+        "gerarPdf": true
+      }
+    }
+  ]
+}
