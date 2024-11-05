@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Mangati\Sicoob;
 
+use RuntimeException;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-# Symfony < 7
+# Symfony >= 7
 use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 # Symfony <= 6.4
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
@@ -56,8 +57,10 @@ final class SerializerFactory
     {
         if (class_exists(AttributeLoader::class)) {
             $loader = new AttributeLoader();
-        } else {
+        } elseif (class_exists(AnnotationLoader::class)) {
             $loader = new AnnotationLoader();
+        } else {
+            throw new RuntimeException('No loader available');
         }
 
         $classMetadataFactory = new ClassMetadataFactory($loader);
