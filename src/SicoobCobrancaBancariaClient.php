@@ -22,8 +22,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 final class SicoobCobrancaBancariaClient extends SicoobClientBase
 {
-    private const PROD_API_URL = 'https://api.sicoob.com.br/cobranca-bancaria/v2';
-    private const SANDBOX_API_URL = 'https://sandbox.sicoob.com.br/sicoob/sandbox/cobranca-bancaria/v2';
+    private const PROD_API_URL = 'https://api.sicoob.com.br/cobranca-bancaria/v3';
+    private const SANDBOX_API_URL = 'https://sandbox.sicoob.com.br/sicoob/sandbox/cobranca-bancaria/v3';
 
     public function __construct(HttpClientInterface $client)
     {
@@ -42,8 +42,8 @@ final class SicoobCobrancaBancariaClient extends SicoobClientBase
             method: 'POST',
             path: '/boletos',
             token: $token,
-            requestData: $request->boletos,
-            expectedStatusCode: 207,
+            requestData: $request->boleto,
+            expectedStatusCode: 200,
             responseType: IncluirBoletosResponse::class
         );
     }

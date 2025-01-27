@@ -34,7 +34,7 @@ class SicoobBoletoTest extends TestCase
 
         $client = new MockHttpClient([
             function ($method, $url, $options): MockResponse {
-                $expectedUrl = 'https://api.sicoob.com.br/cobranca-bancaria/v2/boletos';
+                $expectedUrl = 'https://api.sicoob.com.br/cobranca-bancaria/v3/boletos';
                 $expectedBody = TestUtils::readResource('incluir-boletos-request.json');
 
                 $this->assertSame('POST', $method);
@@ -43,7 +43,7 @@ class SicoobBoletoTest extends TestCase
 
                 return new MockResponse(
                     TestUtils::readResource('incluir-boletos-response.json'),
-                    [ 'http_code' => 207 ]
+                    [ 'http_code' => 200 ]
                 );
             },
         ]);
@@ -51,29 +51,25 @@ class SicoobBoletoTest extends TestCase
         $sicoob = new SicoobCobrancaBancariaClient($client);
 
         $response = $sicoob->incluirBoletos($token, new IncluirBoletosRequest(
-            boletos: [
-                $this->buildBoleto(),
-            ],
+            boleto: $this->buildBoleto(),
         ));
 
-        $this->assertCount(1, $response->resultado);
-        $this->assertSame(123, $response->resultado[0]->status->codigo);
-        $this->assertSame("sucesso", $response->resultado[0]->status->mensagem);
-        $this->assertSame(999999, $response->resultado[0]->boleto->numeroContrato);
+        $this->assertInstanceOf(Boleto::class, $response->resultado);
+        $this->assertSame(999999, $response->resultado->numeroCliente);
     }
 
     public function testIncluirBoletosSandboxUrl(): void
     {
         $client = new MockHttpClient([
             function ($method, $url, $options): MockResponse {
-                $expectedUrl = 'https://sandbox.sicoob.com.br/sicoob/sandbox/cobranca-bancaria/v2/boletos';
+                $expectedUrl = 'https://sandbox.sicoob.com.br/sicoob/sandbox/cobranca-bancaria/v3/boletos';
 
                 $this->assertSame('POST', $method);
                 $this->assertSame($expectedUrl, $url);
 
                 return new MockResponse(
                     TestUtils::readResource('incluir-boletos-response.json'),
-                    [ 'http_code' => 207 ]
+                    [ 'http_code' => 200 ]
                 );
             },
         ]);
@@ -82,19 +78,17 @@ class SicoobBoletoTest extends TestCase
         $sicoob = new SicoobCobrancaBancariaClient($client);
 
         $sicoob->incluirBoletos($token, new IncluirBoletosRequest(
-            boletos: [
-                $this->buildBoleto(),
-            ],
+            boleto: $this->buildBoleto(),
         ));
     }
 
     private function buildBoleto(): Boleto
     {
         return new Boleto(
-            numeroContrato: 999999,
-            modalidade: 1,
+            numeroCliente: 999999,
+            codigoModalidade: 1,
             numeroContaCorrente: 123456,
-            especieDocumento: "FAT",
+            codigoEspecieDocumento: "FAT",
             dataEmissao: DateTimeImmutable::createFromFormat('!Y-m-d', '2022-08-15'),
             seuNumero: "158",
             identificacaoEmissaoBoleto: 2,
@@ -117,7 +111,7 @@ class SicoobBoletoTest extends TestCase
                 cidade: "Cidade Teste",
                 cep: "12345678",
                 uf: "TT",
-                email: [ "email@test.com" ]
+                email: "email@test.com"
             ),
             gerarPdf: true,
         );

@@ -9,7 +9,6 @@ namespace Mangati\Sicoob\Model\CobrancaBancaria;
  */
 final class Pagador
 {
-    /** @param string[] $email */
     public function __construct(
         public readonly string $numeroCpfCnpj,
         public readonly string $nome,
@@ -18,7 +17,7 @@ final class Pagador
         public readonly string $cidade,
         public readonly string $cep,
         public readonly string $uf,
-        public readonly array $email,
+        public readonly string $email,
     ) {
     }
 }

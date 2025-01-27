@@ -6,10 +6,10 @@ namespace Mangati\Sicoob\Tests;
 
 use DateTimeImmutable;
 use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletosResponse;
-use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletosResultado;
 use Mangati\Sicoob\Dto\CobrancaBancaria\SegundaViaBoletoRequest;
 use Mangati\Sicoob\Dto\Pix\ConsultaPixRequest;
 use Mangati\Sicoob\Dto\Pix\NovaCobrancaVencimentoRequest;
+use Mangati\Sicoob\Model\CobrancaBancaria\Boleto;
 use Mangati\Sicoob\Model\Pix\CalendarioVencimento;
 use Mangati\Sicoob\Model\Pix\InfoAdicional;
 use Mangati\Sicoob\Model\Pix\JurosMulta;
@@ -24,6 +24,17 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
  */
 class SerializerTest extends TestCase
 {
+    public function testBoletoSerialize(): void
+    {
+        $json = TestUtils::readResource('incluir-boletos-request.json');
+
+        $serializer = SerializerFactory::createSerializer();
+        $boleto = $serializer->deserialize($json, Boleto::class, 'json');
+
+        $this->assertInstanceOf(Boleto::class, $boleto);
+        $this->assertSame(999999, $boleto->numeroCliente);
+    }
+
     public function testIncluirBoletoResponse(): void
     {
         $json = TestUtils::readResource('incluir-boletos-response.json');
@@ -32,8 +43,7 @@ class SerializerTest extends TestCase
         $response = $serializer->deserialize($json, IncluirBoletosResponse::class, 'json');
 
         $this->assertInstanceOf(IncluirBoletosResponse::class, $response);
-        $this->assertCount(1, $response->resultado);
-        $this->assertInstanceOf(IncluirBoletosResultado::class, $response->resultado[0]);
+        $this->assertInstanceOf(Boleto::class, $response->resultado);
     }
 
     public function testNovaCobrancaVencimentoRequest(): void
@@ -70,8 +80,8 @@ class SerializerTest extends TestCase
     public function testNormalizer(): void
     {
         $data = new SegundaViaBoletoRequest(
-            numeroContrato: '123',
-            modalidade: 1,
+            numeroCliente: '123',
+            codigoModalidade: 1,
             nossoNumero: '333',
             gerarPdf: true,
         );
@@ -80,8 +90,8 @@ class SerializerTest extends TestCase
         $actualData = $normalizer->normalize($data, 'array');
 
         $expectedData = [
-            'numeroContrato' => '123',
-            'modalidade' => 1,
+            'numeroCliente' => '123',
+            'codigoModalidade' => 1,
             'nossoNumero' => '333',
             'gerarPdf' => true,
         ];

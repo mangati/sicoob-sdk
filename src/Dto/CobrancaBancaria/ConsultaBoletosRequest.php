@@ -10,11 +10,12 @@ namespace Mangati\Sicoob\Dto\CobrancaBancaria;
 final class ConsultaBoletosRequest
 {
     public function __construct(
-        public readonly string $numeroContrato,
-        public readonly int $modalidade,
+        public readonly string $numeroCliente,
+        public readonly int $codigoModalidade,
         public readonly ?int $nossoNumero = null,
         public readonly ?string $linhaDigitavel = null,
         public readonly ?string $codigoBarras = null,
+        public readonly ?string $numeroContratoCobranca = null,
     ) {
     }
 }
