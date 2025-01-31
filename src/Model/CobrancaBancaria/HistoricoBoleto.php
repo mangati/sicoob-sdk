@@ -16,7 +16,7 @@ final class HistoricoBoleto
     public function __construct(
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
         public readonly ?DateTimeInterface $dataHistorico = null,
-        public readonly ?int $tipoHistorico = null,
+        public readonly int|string|null $tipoHistorico = null,
         public readonly ?string $descricaoHistorico = null,
     ) {
     }
