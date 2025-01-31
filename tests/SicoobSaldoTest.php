@@ -18,12 +18,13 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 class SicoobSaldoTest extends TestCase
 {
     private const CLIENT_ID = 'testClientId';
+    private const ACCESS_TOKEN = 'testAccessToken';
 
     public function testConsultaExtrato(): void
     {
         $token = new AuthenticationToken(
             clientId: self::CLIENT_ID,
-            accessToken: '123',
+            accessToken: self::ACCESS_TOKEN,
             tokenType: 'Bearer',
             expiresIn: 1,
             refreshExpiresIn: 1,
@@ -36,6 +37,8 @@ class SicoobSaldoTest extends TestCase
 
                 $this->assertSame('GET', $method);
                 $this->assertSame($expectedUrl, $url);
+                $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
+                $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
 
                 return new MockResponse(
                     TestUtils::readResource('consulta-saldo-response.json'),
@@ -65,6 +68,8 @@ class SicoobSaldoTest extends TestCase
 
                 $this->assertSame('GET', $method);
                 $this->assertSame($expectedUrl, $url);
+                $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
+                $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
 
                 return new MockResponse(
                     TestUtils::readResource('consulta-saldo-response.json'),
@@ -73,7 +78,7 @@ class SicoobSaldoTest extends TestCase
             },
         ]);
 
-        $token = SicoobContaCorrenteClient::sandboxToken();
+        $token = SicoobContaCorrenteClient::sandboxToken(self::CLIENT_ID, self::ACCESS_TOKEN);
         $sicoob = new SicoobContaCorrenteClient($client);
 
         $sicoob->consultaSaldo($token, new ConsultaSaldoRequest(

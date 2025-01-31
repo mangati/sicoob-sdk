@@ -42,12 +42,12 @@ abstract class SicoobClientBase
      *
      * @see https://developers.sicoob.com.br/portal/sandbox
      */
-    public static function sandboxToken(): AuthenticationToken
+    public static function sandboxToken(string $clientId, string $accessToken): AuthenticationToken
     {
         return new AuthenticationToken(
             isSandbox: true,
-            clientId: '9b5e603e428cc477a2841e2683c92d21',
-            accessToken: '1301865f-c6bc-38f3-9f49-666dbcfc59c3',
+            clientId: $clientId,
+            accessToken: $accessToken,
             tokenType: 'Bearer',
             expiresIn: 0,
             refreshExpiresIn: 0,

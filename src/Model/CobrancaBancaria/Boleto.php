@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
  */
 final class Boleto
 {
+    /** @param HistoricoBoleto[] $listaHistorico */
     public function __construct(
         public readonly ?int $numeroCliente = null,
         public readonly ?int $codigoModalidade = null,
@@ -57,6 +58,8 @@ final class Boleto
         public readonly ?int $codigoNegativacao = null,
         public readonly ?string $pdfBoleto = null,
         public readonly ?int $nossoNumero = null,
+        public readonly ?array $listaHistorico = null,
+        public readonly ?SituacaoBoleto $situacaoBoleto = null,
     ) {
     }
 }

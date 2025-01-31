@@ -9,12 +9,10 @@ use Mangati\Sicoob\Model\CobrancaBancaria\Boleto;
 /**
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
-final class IncluirBoletosResponse
+final class IncluirBoletoRequest
 {
-    /** @param array<int,ResultadoStatus> $mensagens */
     public function __construct(
-        public readonly ?Boleto $resultado,
-        public readonly ?array $mensagens,
+        public readonly Boleto $boleto,
     ) {
     }
 }

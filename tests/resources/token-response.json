@@ -4,5 +4,5 @@
   "refresh_expires_in": 0,
   "token_type": "Bearer",
   "not-before-policy": 0,
-  "scope": "cobranca_boletos_incluir"
+  "scope": "boletos_inclusao"
 }

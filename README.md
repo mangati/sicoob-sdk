@@ -30,7 +30,7 @@ $sicoob = new SicoobContaCorrenteClient($client);
 
 ## Autenticação
 
-Production:
+Produção:
 
 ```php
 use Mangati\Sicoob\Dto\TokenRequest;
@@ -58,9 +58,10 @@ print_r($response);
 //            [0] => Mangati\Sicoob\Types\TokenScope Enum:string
 //              (
 //                [name] => COBRANCA_BOLETOS_INCLUIR
-//                [value] => cobranca_boletos_incluir
+//                [value] => boletos_inclusao
 //              )
 //          )
+//       [isSandbox] => false
 //     )
 // )
 ```
@@ -71,32 +72,35 @@ Sandbox:
 use Mangati\Sicoob\SicoobCobrancaBancariaClient;
 use Mangati\Sicoob\Dto\AuthenticationToken;
 
-/** @var AuthenticationToken */
-$token = SicoobCobrancaBancariaClient::sandboxToken();
+// Acesse https://developers.sicoob.com.br/portal/sandbox 
+// para pegar o "Client ID" e o "Access Token (Bearer)"
 
-// then
-$sicoob = new SicoobCobrancaBancariaClient($client, isSandbox: true);
+/** @var AuthenticationToken */
+$token = SicoobCobrancaBancariaClient::sandboxToken(
+    clientId: '<sandbox-client-id>',
+    accessToken: '<sandbox-access-token>',
+);
 ```
 
 
 ## Cobrança Bancária - Boleto
 
 ```php
-use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletosRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletoRequest;
 use Mangati\Sicoob\Model\CobrancaBancaria\Boleto;
 
-$boleto = new Boleto();
-
-$response = $sicoob->incluirBoletos($authToken, new IncluirBoletosRequest(
-    boletos: [ $boleto ],
+$auth = $sicoob->token(new TokenRequest(
+    clientId: $clientId,
+    scopes: [ TokenScope::COBRANCA_BOLETOS_INCLUIR ],
 ));
 
-$resultado = $response->resultado[0];
+$response = $sicoob->incluirBoleto($auth->token, new IncluirBoletoRequest(
+    boleto: new Boleto(),
+));
 
-if ($resultado->status->codigo !== 200) {
-    throw new \Exception($resultado->status->mensagem);
-}
+/** @var Boleto */
+$boleto = $response->resultado;
 
-$base64Data = $resultado->boleto->pdfBoleto;
-$nossoNumero = $resultado->boleto->nossoNumero;
+$base64Data = $boleto->pdfBoleto;
+$nossoNumero = $boleto->nossoNumero;
 ```

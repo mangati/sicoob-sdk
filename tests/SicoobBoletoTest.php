@@ -6,9 +6,12 @@ namespace Mangati\Sicoob\Tests;
 
 use DateTimeImmutable;
 use Mangati\Sicoob\Dto\AuthenticationToken;
-use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletosRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\BaixarBoletoRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultaBoletoRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletoRequest;
 use Mangati\Sicoob\Model\CobrancaBancaria\Boleto;
 use Mangati\Sicoob\Model\CobrancaBancaria\Pagador;
+use Mangati\Sicoob\Model\CobrancaBancaria\SituacaoBoleto;
 use Mangati\Sicoob\SicoobCobrancaBancariaClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -20,37 +23,32 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 class SicoobBoletoTest extends TestCase
 {
     private const CLIENT_ID = 'testClientId';
+    private const ACCESS_TOKEN = 'testAccessToken';
 
-    public function testIncluirBoletos(): void
+    public function testIncluirBoleto(): void
     {
-        $token = new AuthenticationToken(
-            clientId: self::CLIENT_ID,
-            accessToken: '123',
-            tokenType: 'Bearer',
-            expiresIn: 1,
-            refreshExpiresIn: 1,
-            scopes: [],
-        );
-
         $client = new MockHttpClient([
             function ($method, $url, $options): MockResponse {
                 $expectedUrl = 'https://api.sicoob.com.br/cobranca-bancaria/v3/boletos';
-                $expectedBody = TestUtils::readResource('incluir-boletos-request.json');
+                $expectedBody = TestUtils::readResource('incluir-boleto-request.json');
 
                 $this->assertSame('POST', $method);
                 $this->assertSame($expectedUrl, $url);
+                $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
+                $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
                 $this->assertJsonStringEqualsJsonString($expectedBody, $options['body']);
 
                 return new MockResponse(
-                    TestUtils::readResource('incluir-boletos-response.json'),
+                    TestUtils::readResource('incluir-boleto-response.json'),
                     [ 'http_code' => 200 ]
                 );
             },
         ]);
 
+        $token = $this->buildToken();
         $sicoob = new SicoobCobrancaBancariaClient($client);
 
-        $response = $sicoob->incluirBoletos($token, new IncluirBoletosRequest(
+        $response = $sicoob->incluirBoleto($token, new IncluirBoletoRequest(
             boleto: $this->buildBoleto(),
         ));
 
@@ -58,7 +56,7 @@ class SicoobBoletoTest extends TestCase
         $this->assertSame(999999, $response->resultado->numeroCliente);
     }
 
-    public function testIncluirBoletosSandboxUrl(): void
+    public function testIncluirBoletoSandboxUrl(): void
     {
         $client = new MockHttpClient([
             function ($method, $url, $options): MockResponse {
@@ -66,20 +64,111 @@ class SicoobBoletoTest extends TestCase
 
                 $this->assertSame('POST', $method);
                 $this->assertSame($expectedUrl, $url);
+                $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
+                $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
 
                 return new MockResponse(
-                    TestUtils::readResource('incluir-boletos-response.json'),
+                    TestUtils::readResource('incluir-boleto-response.json'),
                     [ 'http_code' => 200 ]
                 );
             },
         ]);
 
-        $token = SicoobCobrancaBancariaClient::sandboxToken();
+        $token = SicoobCobrancaBancariaClient::sandboxToken(self::CLIENT_ID, self::ACCESS_TOKEN);
         $sicoob = new SicoobCobrancaBancariaClient($client);
 
-        $sicoob->incluirBoletos($token, new IncluirBoletosRequest(
+        $sicoob->incluirBoleto($token, new IncluirBoletoRequest(
             boleto: $this->buildBoleto(),
         ));
+    }
+
+    public function testConsultaBoleto(): void
+    {
+        $client = new MockHttpClient([
+            function ($method, $url, $options): MockResponse {
+                $expectedUrl = 'https://api.sicoob.com.br/cobranca-bancaria/v3/boletos?';
+
+                $this->assertSame('GET', $method);
+                $this->assertStringStartsWith($expectedUrl, $url);
+                $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
+                $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
+                $this->assertSame('testNumeroCliente', $options['query']['numeroCliente']);
+                $this->assertSame(1, $options['query']['codigoModalidade']);
+                $this->assertSame(123, $options['query']['nossoNumero']);
+                $this->assertSame('testLinhaDigitavel', $options['query']['linhaDigitavel']);
+                $this->assertSame('testCodigoBarras', $options['query']['codigoBarras']);
+                $this->assertSame('testNumeroContratoCobranca', $options['query']['numeroContratoCobranca']);
+
+                return new MockResponse(
+                    TestUtils::readResource('consulta-boleto-response.json'),
+                    [ 'http_code' => 200 ]
+                );
+            },
+        ]);
+
+        $token = $this->buildToken();
+        $sicoob = new SicoobCobrancaBancariaClient($client);
+
+        $response = $sicoob->consultarBoleto($token, new ConsultaBoletoRequest(
+            numeroCliente: 'testNumeroCliente',
+            codigoModalidade: 1,
+            nossoNumero: 123,
+            linhaDigitavel: 'testLinhaDigitavel',
+            codigoBarras: 'testCodigoBarras',
+            numeroContratoCobranca: 'testNumeroContratoCobranca',
+        ));
+
+        $this->assertInstanceOf(Boleto::class, $response->resultado);
+        $this->assertSame(999999, $response->resultado->numeroCliente);
+        $this->assertCount(1, $response->resultado->listaHistorico);
+        $this->assertSame(SituacaoBoleto::EM_ABERTO, $response->resultado->situacaoBoleto);
+        $this->assertSame(1, $response->resultado->listaHistorico[0]->tipoHistorico);
+        $this->assertSame(
+            'TARIFA - TAR. MANUTENÇÃO DE TÍTULO VENCIDO - R$ 0,75',
+            $response->resultado->listaHistorico[0]->descricaoHistorico,
+        );
+    }
+
+    public function testBaixarBoleto(): void
+    {
+        $client = new MockHttpClient([
+            function ($method, $url, $options): MockResponse {
+                $expectedUrl = 'https://api.sicoob.com.br/cobranca-bancaria/v3/boletos/123/baixar';
+                $expectedBody = '{"numeroCliente":"testNumeroCliente","codigoModalidade":1}';
+
+                $this->assertSame('POST', $method);
+                $this->assertStringStartsWith($expectedUrl, $url);
+                $this->assertSame($expectedBody, $options['body']);
+                $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
+                $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
+
+                return new MockResponse(
+                    TestUtils::readResource('baixar-boleto-response.json'),
+                    [ 'http_code' => 204 ]
+                );
+            },
+        ]);
+
+        $token = $this->buildToken();
+        $sicoob = new SicoobCobrancaBancariaClient($client);
+
+        $sicoob->baixarBoleto($token, new BaixarBoletoRequest(
+            nossoNumero: 123,
+            numeroCliente: 'testNumeroCliente',
+            codigoModalidade: 1,
+        ));
+    }
+
+    private function buildToken(): AuthenticationToken
+    {
+        return new AuthenticationToken(
+            clientId: self::CLIENT_ID,
+            accessToken: self::ACCESS_TOKEN,
+            tokenType: 'Bearer',
+            expiresIn: 1,
+            refreshExpiresIn: 1,
+            scopes: [],
+        );
     }
 
     private function buildBoleto(): Boleto

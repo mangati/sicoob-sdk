@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Mangati\Sicoob;
 
 use Mangati\Sicoob\Dto\AuthenticationToken;
-use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultaBoletosRequest;
-use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultaBoletosResponse;
+use Mangati\Sicoob\Dto\CobrancaBancaria\BaixarBoletoRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\BaixarBoletoResponse;
+use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultaBoletoRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultaBoletoResponse;
 use Mangati\Sicoob\Dto\CobrancaBancaria\ProrrogarDatasVencimentoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\ProrrogarDatasVencimentoResponse;
-use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletosRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\SegundaViaBoletoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\SegundaViaBoletoResponse;
-use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletosResponse;
+use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletoResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -34,17 +36,17 @@ final class SicoobCobrancaBancariaClient extends SicoobClientBase
         );
     }
 
-    public function incluirBoletos(
+    public function incluirBoleto(
         AuthenticationToken $token,
-        IncluirBoletosRequest $request
-    ): IncluirBoletosResponse {
+        IncluirBoletoRequest $request
+    ): IncluirBoletoResponse {
         return $this->authenticatedRequest(
             method: 'POST',
             path: '/boletos',
             token: $token,
             requestData: $request->boleto,
             expectedStatusCode: 200,
-            responseType: IncluirBoletosResponse::class
+            responseType: IncluirBoletoResponse::class
         );
     }
 
@@ -76,17 +78,31 @@ final class SicoobCobrancaBancariaClient extends SicoobClientBase
         );
     }
 
-    public function consultarBoletos(
+    public function consultarBoleto(
         AuthenticationToken $token,
-        ConsultaBoletosRequest $request
-    ): ConsultaBoletosResponse {
+        ConsultaBoletoRequest $request
+    ): ConsultaBoletoResponse {
         return $this->authenticatedRequest(
             method: 'GET',
             path: '/boletos',
             token: $token,
             requestData: $request,
             expectedStatusCode: 200,
-            responseType: ConsultaBoletosResponse::class
+            responseType: ConsultaBoletoResponse::class
+        );
+    }
+
+    public function baixarBoleto(
+        AuthenticationToken $token,
+        BaixarBoletoRequest $request
+    ): BaixarBoletoResponse {
+        return $this->authenticatedRequest(
+            method: 'POST',
+            path: sprintf('/boletos/%s/baixar', $request->nossoNumero),
+            token: $token,
+            requestData: $request,
+            expectedStatusCode: 204,
+            responseType: BaixarBoletoResponse::class,
         );
     }
 }

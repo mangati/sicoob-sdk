@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mangati\Sicoob\Tests;
 
 use DateTimeImmutable;
-use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletosResponse;
+use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletoResponse;
 use Mangati\Sicoob\Dto\CobrancaBancaria\SegundaViaBoletoRequest;
 use Mangati\Sicoob\Dto\Pix\ConsultaPixRequest;
 use Mangati\Sicoob\Dto\Pix\NovaCobrancaVencimentoRequest;
@@ -26,7 +26,7 @@ class SerializerTest extends TestCase
 {
     public function testBoletoSerialize(): void
     {
-        $json = TestUtils::readResource('incluir-boletos-request.json');
+        $json = TestUtils::readResource('incluir-boleto-request.json');
 
         $serializer = SerializerFactory::createSerializer();
         $boleto = $serializer->deserialize($json, Boleto::class, 'json');
@@ -37,12 +37,12 @@ class SerializerTest extends TestCase
 
     public function testIncluirBoletoResponse(): void
     {
-        $json = TestUtils::readResource('incluir-boletos-response.json');
+        $json = TestUtils::readResource('incluir-boleto-response.json');
 
         $serializer = SerializerFactory::createSerializer();
-        $response = $serializer->deserialize($json, IncluirBoletosResponse::class, 'json');
+        $response = $serializer->deserialize($json, IncluirBoletoResponse::class, 'json');
 
-        $this->assertInstanceOf(IncluirBoletosResponse::class, $response);
+        $this->assertInstanceOf(IncluirBoletoResponse::class, $response);
         $this->assertInstanceOf(Boleto::class, $response->resultado);
     }
 

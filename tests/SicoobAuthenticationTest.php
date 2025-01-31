@@ -25,7 +25,7 @@ class SicoobAuthenticationTest extends TestCase
                 $expectedUrl = 'https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token';
                 $expectedBody = 'grant_type=client_credentials&' .
                     'client_id=testClientId&' .
-                    'scope=cobranca_boletos_abatimentos+cob.read+cco_extrato';
+                    'scope=boletos_inclusao+cob.read+cco_extrato';
 
                 $this->assertSame('POST', $method);
                 $this->assertSame($expectedUrl, $url);
@@ -42,7 +42,7 @@ class SicoobAuthenticationTest extends TestCase
         $response = $sicoob->token(new TokenRequest(
             clientId: self::CLIENT_ID,
             scopes: [
-                TokenScope::COBRANCA_BOLETOS_ABATIMENTOS,
+                TokenScope::COBRANCA_BOLETOS_INCLUIR,
                 TokenScope::PIX_COB_READ,
                 TokenScope::CONTA_CORRENTE_EXTRATO,
             ],
