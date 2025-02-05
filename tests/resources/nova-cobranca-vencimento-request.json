@@ -16,11 +16,11 @@
     "original": "23.44",
     "modalidadeAlteracao": null,
     "multa": {
-      "codigoModalidade": 1,
+      "modalidade": 1,
       "valorPerc": "5.00"
     },
     "juros": {
-      "codigoModalidade": 2,
+      "modalidade": 2,
       "valorPerc": "15.00"
     }
   },
