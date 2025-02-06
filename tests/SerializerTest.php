@@ -80,7 +80,7 @@ class SerializerTest extends TestCase
     public function testNormalizer(): void
     {
         $data = new SegundaViaBoletoRequest(
-            numeroCliente: '123',
+            numeroCliente: 123,
             codigoModalidade: 1,
             nossoNumero: '333',
             gerarPdf: true,
@@ -90,7 +90,7 @@ class SerializerTest extends TestCase
         $actualData = $normalizer->normalize($data, 'array');
 
         $expectedData = [
-            'numeroCliente' => '123',
+            'numeroCliente' => 123,
             'codigoModalidade' => 1,
             'nossoNumero' => '333',
             'gerarPdf' => true,

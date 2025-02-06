@@ -9,12 +9,18 @@ use Mangati\Sicoob\Dto\CobrancaBancaria\BaixarBoletoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\BaixarBoletoResponse;
 use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultaBoletoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultaBoletoResponse;
+use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultarMovimentacoesRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultarMovimentacoesResponse;
+use Mangati\Sicoob\Dto\CobrancaBancaria\DownloadMovimentacoesRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\DownloadMovimentacoesResponse;
 use Mangati\Sicoob\Dto\CobrancaBancaria\ProrrogarDatasVencimentoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\ProrrogarDatasVencimentoResponse;
 use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\SegundaViaBoletoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\SegundaViaBoletoResponse;
 use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletoResponse;
+use Mangati\Sicoob\Dto\CobrancaBancaria\SolicitarMovimentacoesRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\SolicitarMovimentacoesResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -103,6 +109,48 @@ final class SicoobCobrancaBancariaClient extends SicoobClientBase
             requestData: $request,
             expectedStatusCode: 204,
             responseType: BaixarBoletoResponse::class,
+        );
+    }
+
+    public function solicitarMovimentacoes(
+        AuthenticationToken $token,
+        SolicitarMovimentacoesRequest $request
+    ): SolicitarMovimentacoesResponse {
+        return $this->authenticatedRequest(
+            method: 'POST',
+            path: '/boletos/movimentacoes',
+            token: $token,
+            requestData: $request,
+            expectedStatusCode: 200,
+            responseType: SolicitarMovimentacoesResponse::class,
+        );
+    }
+
+    public function consultarMovimentacoes(
+        AuthenticationToken $token,
+        ConsultarMovimentacoesRequest $request
+    ): ConsultarMovimentacoesResponse {
+        return $this->authenticatedRequest(
+            method: 'GET',
+            path: '/boletos/movimentacoes',
+            token: $token,
+            requestData: $request,
+            expectedStatusCode: 200,
+            responseType: ConsultarMovimentacoesResponse::class,
+        );
+    }
+
+    public function downloadMovimentacoes(
+        AuthenticationToken $token,
+        DownloadMovimentacoesRequest $request
+    ): DownloadMovimentacoesResponse {
+        return $this->authenticatedRequest(
+            method: 'GET',
+            path: '/boletos/movimentacoes/download',
+            token: $token,
+            requestData: $request,
+            expectedStatusCode: 200,
+            responseType: DownloadMovimentacoesResponse::class,
         );
     }
 }

@@ -15,4 +15,9 @@ final class TestUtils
     {
         return file_get_contents(sprintf('%s/%s', self::RESOURCES_DIR, $name));
     }
+
+    public static function readResourceAsBase64(string $name): string
+    {
+        return base64_encode(static::readResource($name));
+    }
 }

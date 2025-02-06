@@ -8,7 +8,11 @@ use DateTimeImmutable;
 use Mangati\Sicoob\Dto\AuthenticationToken;
 use Mangati\Sicoob\Dto\CobrancaBancaria\BaixarBoletoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultaBoletoRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultarMovimentacoesRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\DownloadMovimentacoesRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletoRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\SolicitarMovimentacoesRequest;
+use Mangati\Sicoob\Exception\SicoobException;
 use Mangati\Sicoob\Model\CobrancaBancaria\Boleto;
 use Mangati\Sicoob\Model\CobrancaBancaria\Pagador;
 use Mangati\Sicoob\Model\CobrancaBancaria\SituacaoBoleto;
@@ -92,7 +96,7 @@ class SicoobBoletoTest extends TestCase
                 $this->assertStringStartsWith($expectedUrl, $url);
                 $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
                 $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
-                $this->assertSame('testNumeroCliente', $options['query']['numeroCliente']);
+                $this->assertSame(222, $options['query']['numeroCliente']);
                 $this->assertSame(1, $options['query']['codigoModalidade']);
                 $this->assertSame(123, $options['query']['nossoNumero']);
                 $this->assertSame('testLinhaDigitavel', $options['query']['linhaDigitavel']);
@@ -110,7 +114,7 @@ class SicoobBoletoTest extends TestCase
         $sicoob = new SicoobCobrancaBancariaClient($client);
 
         $response = $sicoob->consultarBoleto($token, new ConsultaBoletoRequest(
-            numeroCliente: 'testNumeroCliente',
+            numeroCliente: 222,
             codigoModalidade: 1,
             nossoNumero: 123,
             linhaDigitavel: 'testLinhaDigitavel',
@@ -134,10 +138,10 @@ class SicoobBoletoTest extends TestCase
         $client = new MockHttpClient([
             function ($method, $url, $options): MockResponse {
                 $expectedUrl = 'https://api.sicoob.com.br/cobranca-bancaria/v3/boletos/123/baixar';
-                $expectedBody = '{"numeroCliente":"testNumeroCliente","codigoModalidade":1}';
+                $expectedBody = '{"numeroCliente":333,"codigoModalidade":1}';
 
                 $this->assertSame('POST', $method);
-                $this->assertStringStartsWith($expectedUrl, $url);
+                $this->assertSame($expectedUrl, $url);
                 $this->assertSame($expectedBody, $options['body']);
                 $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
                 $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
@@ -154,9 +158,135 @@ class SicoobBoletoTest extends TestCase
 
         $sicoob->baixarBoleto($token, new BaixarBoletoRequest(
             nossoNumero: 123,
-            numeroCliente: 'testNumeroCliente',
+            numeroCliente: 333,
             codigoModalidade: 1,
         ));
+    }
+
+    public function testSolicitarMovimentacoes(): void
+    {
+        $client = new MockHttpClient([
+            function ($method, $url, $options): MockResponse {
+                $expectedUrl = 'https://api.sicoob.com.br/cobranca-bancaria/v3/boletos/movimentacoes';
+                $expectedBody = '{"numeroCliente":123,"tipoMovimento":1,' .
+                    '"dataInicial":"2025-01-03","dataFinal":"2025-01-05"}';
+
+                $this->assertSame('POST', $method);
+                $this->assertSame($expectedUrl, $url);
+                $this->assertSame($expectedBody, $options['body']);
+                $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
+                $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
+
+                return new MockResponse(
+                    TestUtils::readResource('solicitar-movimentacoes-response.json'),
+                    [ 'http_code' => 200 ]
+                );
+            },
+        ]);
+
+        $token = $this->buildToken();
+        $sicoob = new SicoobCobrancaBancariaClient($client);
+
+        $response = $sicoob->solicitarMovimentacoes($token, new SolicitarMovimentacoesRequest(
+            numeroCliente: 123,
+            tipoMovimento: 1,
+            dataInicial: new DateTimeImmutable('2025-01-03T10:34:00Z'),
+            dataFinal: new DateTimeImmutable('2025-01-05T10:34:02Z'),
+        ));
+
+        $this->assertSame(12345678, $response->resultado->codigoSolicitacao);
+    }
+
+    public function testConsultarMovimentacoes(): void
+    {
+        $client = new MockHttpClient([
+            function ($method, $url, $options): MockResponse {
+                $expectedUrl = 'https://api.sicoob.com.br/cobranca-bancaria/v3/boletos/movimentacoes?';
+
+                $this->assertSame('GET', $method);
+                $this->assertStringStartsWith($expectedUrl, $url);
+                $this->assertSame(123, $options['query']['numeroCliente']);
+                $this->assertSame(98760, $options['query']['codigoSolicitacao']);
+                $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
+                $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
+
+                return new MockResponse(
+                    TestUtils::readResource('consultar-movimentacoes-response.json'),
+                    [ 'http_code' => 200 ]
+                );
+            },
+        ]);
+
+        $token = $this->buildToken();
+        $sicoob = new SicoobCobrancaBancariaClient($client);
+
+        $response = $sicoob->consultarMovimentacoes($token, new ConsultarMovimentacoesRequest(
+            numeroCliente: 123,
+            codigoSolicitacao: 98760,
+        ));
+
+        $this->assertSame(2, $response->resultado->quantidadeTotalRegistros);
+        $this->assertSame(1, $response->resultado->quantidadeArquivo);
+        $this->assertContains(12345678, $response->resultado->idArquivos);
+    }
+
+    public function testConsultarMovimentacoesWhenItIsNotReadyYet(): void
+    {
+        $client = new MockHttpClient([
+            function ($method, $url, $options): MockResponse {
+                return new MockResponse(
+                    '',
+                    [ 'http_code' => 204 ]
+                );
+            },
+        ]);
+
+        $token = $this->buildToken();
+        $sicoob = new SicoobCobrancaBancariaClient($client);
+
+        $this->expectException(SicoobException::class);
+        $this->expectExceptionMessage(
+            'SicoobException: body=, statusCode=204,' .
+            ' url=https://api.sicoob.com.br/cobranca-bancaria/v3/boletos/movimentacoes'
+        );
+
+        $sicoob->consultarMovimentacoes($token, new ConsultarMovimentacoesRequest(
+            numeroCliente: 123,
+            codigoSolicitacao: 98760,
+        ));
+    }
+
+    public function testDownloadMovimentacoes(): void
+    {
+        $client = new MockHttpClient([
+            function ($method, $url, $options): MockResponse {
+                $expectedUrl = 'https://api.sicoob.com.br/cobranca-bancaria/v3/boletos/movimentacoes/download?';
+
+                $this->assertSame('GET', $method);
+                $this->assertStringStartsWith($expectedUrl, $url);
+                $this->assertSame(123, $options['query']['numeroCliente']);
+                $this->assertSame(98760, $options['query']['codigoSolicitacao']);
+                $this->assertSame(123456, $options['query']['idArquivo']);
+                $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
+                $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
+
+                return new MockResponse(
+                    TestUtils::readResource('download-movimentacoes-response.json'),
+                    [ 'http_code' => 200 ]
+                );
+            },
+        ]);
+
+        $token = $this->buildToken();
+        $sicoob = new SicoobCobrancaBancariaClient($client);
+
+        $response = $sicoob->downloadMovimentacoes($token, new DownloadMovimentacoesRequest(
+            numeroCliente: 123,
+            codigoSolicitacao: 98760,
+            idArquivo: 123456,
+        ));
+
+        $this->assertSame('ENTR_3066_189189_201904260922011189887_47_0.zip', $response->resultado->nomeArquivo);
     }
 
     private function buildToken(): AuthenticationToken

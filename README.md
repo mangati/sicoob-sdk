@@ -104,3 +104,50 @@ $boleto = $response->resultado;
 $base64Data = $boleto->pdfBoleto;
 $nossoNumero = $boleto->nossoNumero;
 ```
+
+## Cobrança Bancária - Movimentações
+
+```php
+use Mangati\Sicoob\Helper\CobrancaBancaria\MovimentacoesDownloader;
+use Mangati\Sicoob\Model\CobrancaBancaria\Movimentacao;
+
+$auth = $sicoob->token(new TokenRequest(
+    clientId: $clientId,
+    scopes: [ TokenScope::COBRANCA_BOLETOS_CONSULTAR ],
+));
+
+$downloader = new MovimentacoesDownloader($sicoob);
+
+/** @var Generator<Movimentacao> */
+$movimentacoes = $downloader->download(
+    $token,
+    $numeroCliente,
+    $tipoMovimento,
+    $dataInicial,
+    $dataFinal
+);
+
+foreach ($movimentacoes as $movimentacao) {
+    print_r($movimentacao);
+    // Mangati\Sicoob\Model\CobrancaBancaria\Movimentacao Object
+    // (
+    //     [siglaMovimento] => ENTR
+    //     [dataInicioMovimento] => DateTimeImmutable
+    //     [dataFimMovimento] => DateTimeImmutable
+    //     [numeroCliente] => 123456
+    //     [numeroContrato] => 987654
+    //     [modalidade] => 1
+    //     [numeroTitulo] => 1004
+    //     [seuNumero] => 100
+    //     [dataVencimentoTitulo] => DateTimeImmutable
+    //     [valorTitulo] => 150
+    //     [codigoBarras] => 75600000000000000000000000000000000000000001
+    //     [dataMovimentoEntrada] => DateTimeImmutable
+    //     [dataEmissaoDocumento] => DateTimeImmutable
+    //     [dataLimitePagamento] => DateTimeImmutable
+    //     [numeroContaCorrente] => 102938
+    //     [valorTarifaMovimento] => 0
+    //     [numeroContratoCobranca] => 1234
+    // )
+}
+```

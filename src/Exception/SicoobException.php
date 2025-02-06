@@ -1,17 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mangati\Sicoob\Exception;
 
 use Exception;
 
+/**
+ * @author Rogerio Lino <rogeriolino@gmail.com>
+ */
 final class SicoobException extends Exception
 {
-    /** @param array<mixed>|null $body */
     public function __construct(
+        private readonly string $url,
         private readonly int $statusCode,
-        private readonly ?array $body,
+        private readonly ?string $body,
     ) {
-        parent::__construct('SicoobException');
+        parent::__construct(sprintf(
+            'SicoobException: body=%s, statusCode=%s, url=%s',
+            $body,
+            $statusCode,
+            $url,
+        ));
+    }
+
+    public function getUrl(): string
+    {
+        return $this->url;
     }
 
     public function getStatusCode(): int
@@ -19,8 +34,7 @@ final class SicoobException extends Exception
         return $this->statusCode;
     }
 
-    /** @return array<mixed>|null */
-    public function getBody(): ?array
+    public function getBody(): ?string
     {
         return $this->body;
     }
