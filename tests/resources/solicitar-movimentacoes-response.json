@@ -1,0 +1,6 @@
+{
+	"resultado": {
+		"mensagem": "Solicitação recebida com sucesso. Utilize o 'Código da Solicitação' para verificar se já foi processada.",
+		"codigoSolicitacao": 12345678
+	}
+}

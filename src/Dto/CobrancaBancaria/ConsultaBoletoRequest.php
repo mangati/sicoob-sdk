@@ -10,7 +10,7 @@ namespace Mangati\Sicoob\Dto\CobrancaBancaria;
 final class ConsultaBoletoRequest
 {
     public function __construct(
-        public readonly string $numeroCliente,
+        public readonly int $numeroCliente,
         public readonly int $codigoModalidade,
         public readonly ?int $nossoNumero = null,
         public readonly ?string $linhaDigitavel = null,

@@ -139,12 +139,11 @@ abstract class SicoobClientBase
     ): ResponseInterface {
         $response = $this->client->request($method, $url, $options);
         $statusCode = $response->getStatusCode();
-
         if ($expectedStatusCode !== $statusCode) {
-            $body = $response->toArray(false);
             throw new SicoobException(
+                url: $url,
                 statusCode: $statusCode,
-                body: $body
+                body: $response->getContent(false),
             );
         }
 

@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace Mangati\Sicoob\Dto\CobrancaBancaria;
 
-use Symfony\Component\Serializer\Attribute\Ignore;
-
 /**
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
-final class BaixarBoletoRequest
+final class ConsultarMovimentacoesRequest
 {
     public function __construct(
-        #[Ignore]
-        public readonly int $nossoNumero,
         public readonly int $numeroCliente,
-        public readonly int $codigoModalidade,
+        public readonly int $codigoSolicitacao,
     ) {
     }
 }
