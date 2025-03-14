@@ -60,6 +60,7 @@ final class Boleto
         public readonly ?int $nossoNumero = null,
         public readonly ?array $listaHistorico = null,
         public readonly ?SituacaoBoleto $situacaoBoleto = null,
+        public readonly ?int $numeroContratoCobranca = null,
     ) {
     }
 }
