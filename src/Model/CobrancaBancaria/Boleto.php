@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Mangati\Sicoob\Model\CobrancaBancaria;
 
 use DateTimeInterface;
+use Mangati\Sicoob\Types\ContaCorrente\CodigoCadastroPix;
+use Mangati\Sicoob\Types\ContaCorrente\SituacaoBoleto;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
@@ -61,6 +63,7 @@ final class Boleto
         public readonly ?array $listaHistorico = null,
         public readonly ?SituacaoBoleto $situacaoBoleto = null,
         public readonly ?int $numeroContratoCobranca = null,
+        public readonly ?CodigoCadastroPix $codigoCadastrarPIX = null,
     ) {
     }
 }
