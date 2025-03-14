@@ -11,6 +11,7 @@ use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultaBoletoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\ConsultarMovimentacoesRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\DownloadMovimentacoesRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\IncluirBoletoRequest;
+use Mangati\Sicoob\Dto\CobrancaBancaria\SegundaViaBoletoRequest;
 use Mangati\Sicoob\Dto\CobrancaBancaria\SolicitarMovimentacoesRequest;
 use Mangati\Sicoob\Exception\SicoobException;
 use Mangati\Sicoob\Model\CobrancaBancaria\Boleto;
@@ -131,6 +132,48 @@ class SicoobBoletoTest extends TestCase
             'TARIFA - TAR. MANUTENÇÃO DE TÍTULO VENCIDO - R$ 0,75',
             $response->resultado->listaHistorico[0]->descricaoHistorico,
         );
+    }
+
+    public function testSegundaViaBoleto(): void
+    {
+        $client = new MockHttpClient([
+            function ($method, $url, $options): MockResponse {
+                $expectedUrl = 'https://api.sicoob.com.br/cobranca-bancaria/v3/boletos/segunda-via?';
+
+                $this->assertSame('GET', $method);
+                $this->assertStringStartsWith($expectedUrl, $url);
+                $this->assertContains(sprintf('Authorization: Bearer %s', self::ACCESS_TOKEN), $options['headers']);
+                $this->assertContains(sprintf('client_id: %s', self::CLIENT_ID), $options['headers']);
+                $this->assertSame(222, $options['query']['numeroCliente']);
+                $this->assertSame('00001230012301230123', $options['query']['linhaDigitavel']);
+                $this->assertSame(123, $options['query']['nossoNumero']);
+                $this->assertSame('99991239991239991239', $options['query']['codigoBarras']);
+                $this->assertSame(true, $options['query']['gerarPdf']);
+                $this->assertSame(111, $options['query']['numeroContratoCobranca']);
+
+                return new MockResponse(
+                    TestUtils::readResource('segunda-via-boleto-response.json'),
+                    [ 'http_code' => 200 ]
+                );
+            },
+        ]);
+
+        $token = $this->buildToken();
+        $sicoob = new SicoobCobrancaBancariaClient($client);
+
+        $response = $sicoob->segundaViaBoleto($token, new SegundaViaBoletoRequest(
+            numeroCliente: 222,
+            codigoModalidade: 1,
+            nossoNumero: 123,
+            linhaDigitavel: '00001230012301230123',
+            codigoBarras: '99991239991239991239',
+            numeroContratoCobranca: 111,
+            gerarPdf: true,
+        ));
+
+        $this->assertInstanceOf(Boleto::class, $response->resultado);
+        $this->assertSame(999999, $response->resultado->numeroCliente);
+        $this->assertSame(1, $response->resultado->numeroContratoCobranca);
     }
 
     public function testBaixarBoleto(): void

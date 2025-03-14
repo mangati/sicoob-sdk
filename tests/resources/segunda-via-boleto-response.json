@@ -1,0 +1,45 @@
+{
+  "resultado": {
+    "numeroCliente": 999999,
+    "codigoModalidade": 1,
+    "codigoEspecieDocumento": "DM",
+    "dataEmissao": "2018-09-20",
+    "nossoNumero": 0,
+    "seuNumero": "1235512",
+    "codigoBarras": "",
+    "linhaDigitavel": "",
+    "valor": 156.23,
+    "dataVencimento": "2018-09-20",
+    "valorAbatimento": 1,
+    "numeroParcela": 1,
+    "aceite": true,
+    "tipoMulta": 1,
+    "valorMulta": 5.01,
+    "tipoJurosMora": 1,
+    "valorJurosMora": 4,
+    "pagador": {
+      "numeroCpfCnpj": "98765432185",
+      "nome": "Marcelo dos Santos",
+      "endereco": "Rua 87 Quadra 1 Lote 1 casa 1",
+      "bairro": "Santa Rosa",
+      "cidade": "Luziânia",
+      "cep": "72320000",
+      "uf": "DF",
+      "email": "pagador@dominio.com.br"
+    },
+    "beneficiarioFinal": {
+      "numeroCpfCnpj": "98784978699",
+      "nome": "Lucas de Lima"
+    },
+    "mensagensInstrucao": [
+      "Descrição da Instrução 1",
+      "Descrição da Instrução 2",
+      "Descrição da Instrução 3",
+      "Descrição da Instrução 4",
+      "Descrição da Instrução 5"
+    ],
+    "pdfBoleto": "JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9UeXBlL1hPYmplY3QvU3VidHlwZS9JbWFnZS9XaWR0aCA1Nzgv+PgolaVRleHQtNS41LjExCnN0YXJ0eHJlZgoyNzAxOQolJUVPRgo=",
+    "qrCode": "00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3",
+    "numeroContratoCobranca": 1
+  }
+}

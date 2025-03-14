@@ -79,7 +79,7 @@ final class SicoobCobrancaBancariaClient extends SicoobClientBase
             path: '/boletos/segunda-via',
             token: $token,
             requestData: $request,
-            expectedStatusCode: 207,
+            expectedStatusCode: 200,
             responseType: SegundaViaBoletoResponse::class
         );
     }

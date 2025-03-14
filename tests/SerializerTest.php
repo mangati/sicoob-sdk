@@ -82,7 +82,7 @@ class SerializerTest extends TestCase
         $data = new SegundaViaBoletoRequest(
             numeroCliente: 123,
             codigoModalidade: 1,
-            nossoNumero: '333',
+            nossoNumero: 333,
             gerarPdf: true,
         );
 
@@ -92,7 +92,10 @@ class SerializerTest extends TestCase
         $expectedData = [
             'numeroCliente' => 123,
             'codigoModalidade' => 1,
-            'nossoNumero' => '333',
+            'nossoNumero' => 333,
+            'linhaDigitavel' => null,
+            'codigoBarras' => null,
+            'numeroContratoCobranca' => null,
             'gerarPdf' => true,
         ];
         $this->assertSame($expectedData, $actualData);
