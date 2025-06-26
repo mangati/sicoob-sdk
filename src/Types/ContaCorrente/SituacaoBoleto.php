@@ -1,6 +1,6 @@
 <?php
 
-namespace Mangati\Sicoob\Model\CobrancaBancaria;
+namespace Mangati\Sicoob\Types\ContaCorrente;
 
 enum SituacaoBoleto : string
 {
